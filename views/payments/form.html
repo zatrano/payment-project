@@ -1,0 +1,74 @@
+<!-- Ödeme Formu -->
+<div class="form-container" id="paymentFormContainer">
+    <form id="paymentForm">
+        <div class="input-group">
+            <label for="amount">Ödeme Tutarı</label>
+            <div class="input-icon">
+                <span class="tl-icon">₺</span>
+            </div>
+            <input type="number" id="amount" class="input-field" placeholder="0.00" min="1" step="0.01" required>
+        </div>
+
+        <div class="input-group">
+            <label for="installment">Taksit Seçeneği</label>
+            <div class="input-icon">
+                <i class="fas fa-credit-card"></i>
+            </div>
+            <select id="installment" class="taksit-select" required>
+                <option value="">Taksit seçiniz</option>
+                <option value="1">Tek Çekim</option>
+                <option value="2">2 Taksit</option>
+                <option value="3">3 Taksit</option>
+                <option value="6">6 Taksit</option>
+                <option value="9">9 Taksit</option>
+                <option value="12">12 Taksit</option>
+            </select>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="input-group">
+            <label for="cardNumber">Kart Numarası</label>
+            <div class="input-icon">
+                <i class="far fa-credit-card"></i>
+            </div>
+            <input type="text" id="cardNumber" class="input-field" placeholder="1234 5678 9012 3456" maxlength="19"
+                required>
+        </div>
+
+        <div class="flex-container">
+            <div class="input-group">
+                <label for="cardHolder">Kart Üzerindeki İsim</label>
+                <div class="input-icon">
+                    <i class="far fa-user"></i>
+                </div>
+                <input type="text" id="cardHolder" class="input-field" placeholder="Ad Soyad" required>
+            </div>
+
+            <div class="input-group">
+                <label for="expiryDate">Son Kullanma Tarihi</label>
+                <div class="input-icon">
+                    <i class="far fa-calendar-alt"></i>
+                </div>
+                <input type="text" id="expiryDate" class="input-field" placeholder="AA/YY" maxlength="5" required>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="cvv">Güvenlik Kodu (CVV)</label>
+            <div class="input-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <input type="text" id="cvv" class="input-field" placeholder="123" maxlength="3" required>
+        </div>
+
+        <button type="submit" class="pay-button">
+            ÖDEMEYİ TAMAMLA <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+        </button>
+
+        <div class="security-note">
+            <i class="fas fa-shield-alt"></i>
+            Ödeme işleminiz 256-bit SSL ile güven altında
+        </div>
+    </form>
+</div>

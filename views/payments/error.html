@@ -1,0 +1,37 @@
+<!-- Başarısız Sonuç Sayfası -->
+<div class="result-content error" id="errorResult">
+    <div class="icon-container">
+        <i class="fas fa-times"></i>
+    </div>
+
+    <h2 class="result-title">Ödeme Başarısız!</h2>
+    <p class="result-message">Ödemeniz işleme alınamadı. Lütfen kart bilgilerinizi kontrol edip tekrar deneyin.</p>
+
+    <div class="details-card">
+        <div class="detail-item">
+            <span class="detail-label">Hata Kodu:</span>
+            <span class="detail-value">E-1052</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Sebep:</span>
+            <span class="detail-value">Yetersiz bakiye</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Tutar:</span>
+            <span class="detail-value" id="errorAmount">₺349.90</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Tarih:</span>
+            <span class="detail-value" id="errorDate">20.11.2023 - 14:30</span>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn btn-primary" id="retryPaymentBtn">Tekrar Dene</button>
+    </div>
+
+    <div class="security-note">
+        <i class="fas fa-shield-alt"></i>
+        Ödeme işleminiz 256-bit SSL ile güven altında
+    </div>
+</div>

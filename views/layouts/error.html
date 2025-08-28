@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tr">
+    <head>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-7KWP1CLQMM"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'G-7KWP1CLQMM');
+	</script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="zatrano ile ücretsiz bir şekilde interaktif dijital davetiyelerinizi kolayca oluşturup paylaşabilirsiniz." />
+        <meta name="robots" content="index, follow">
+        <meta name="author" content="zatrano">
+        <meta name="publisher" content="zatrano">
+        <meta property="og:site_name" content="zatrano">
+        <meta property="og:title" content="zatrano | İnteraktif Dijital Davetiye" />
+        <meta property="og:description" content="dzatrano ile ücretsiz bir şekilde interaktif dijital davetiyelerinizi kolayca oluşturup paylaşabilirsiniz." />
+        <meta property="og:image" itemprop="image" content="/favicon.png">
+        <meta property="og:type" content="website" />
+        <title>zatrano | İçerik Bulunamadı</title>
+        <link rel="icon" type="image/x-icon" href="/favicon.png">
+        <link href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap" rel="stylesheet">
+        <style>
+            html, body {
+                background-color: #FFF;
+                color: #000;
+                font-family: 'Poiret One', sans-serif;
+                font-weight: 200;
+                height: 100vh;
+                margin: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+            .content {
+                text-align: center;
+            }
+            .title {
+                font-size: 84px;
+            }
+            .description {
+                font-size: 32px;
+            }
+            .login {
+                font-size: 30px;
+            }
+            .sad-face {
+                font-size: 60px;
+            }
+            a {
+                text-decoration: none;
+                font-weight: bold;
+                color: #000;
+            }
+        </style>
+</head>
+    <body>
+        <div class="content">
+            <div class="title">
+                <div class="sad-face">😔</div>
+                Üzgünüm
+                <br />
+                <span class="description">Aradığınızı bulamadım!</span>
+                <br />
+                <a href="https://zatrano" title="Kullanıcı Paneline Git"><span class="login">Kullanıcı Paneline Git</span></a>
+            </div>
+        </div>
+        <script>
+        (function() {
+          var supportsPassive = eventListenerOptionsSupported();
+          if (supportsPassive) {
+            var addEvent = EventTarget.prototype.addEventListener;
+            overwriteAddEvent(addEvent);
+          }
+          function overwriteAddEvent(superMethod) {
+            var defaultOptions = {
+              passive: true,
+              capture: false
+            };
+            EventTarget.prototype.addEventListener = function(type, listener, options) {
+              var usesListenerOptions = typeof options === 'object';
+              var useCapture = usesListenerOptions ? options.capture : options;
+              options = usesListenerOptions ? options : {};
+              options.passive = options.passive !== undefined ? options.passive : defaultOptions.passive;
+              options.capture = useCapture !== undefined ? useCapture : defaultOptions.capture;
+              superMethod.call(this, type, listener, options);
+            };
+          }
+          function eventListenerOptionsSupported() {
+            var supported = false;
+            try {
+              var opts = Object.defineProperty({}, 'passive', {
+                get: function() {
+                  supported = true;
+                }
+              });
+              window.addEventListener("test", null, opts);
+            } catch (e) {}
+            return supported;
+          }
+        })();
+        </script>
+    </body>
+</html>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7KWP1CLQMM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-7KWP1CLQMM');
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="author" content="zatrano" />
+  <meta name="description" content="{{ .Card.Name }} | {{ .Card.Title }} Dijital kartvizitimi inceleyin.">
+  <meta name="theme-color" content="#10B981">
+  <link rel="manifest" href="/{{ .Card.Slug }}/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/images/icons/icon-192.png">
+  <title>
+    {{ .Card.Name }} | {{ .Card.Title }}
+  </title>
+  <link rel="icon" type="image/x-icon" href="/images/favicon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/card.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+           colors: {
+            brand: {
+              light: '#6EE7B7',
+              DEFAULT: '#10B981',
+              dark: '#059669',
+            },
+            accent: {
+              light: '#A78BFA',
+              DEFAULT: '#8B5CF6',
+              dark: '#7C3AED',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+<div class="card-container-wrapper">
+    <div class="card-profile">
+        <div class="gradient-overlay"></div>
+        {{embed}}
+    </div>
+</div>
+<div id="pwa-install-alert">
+  <strong id="pwa-install-title">Bu Kartviziti Ana Ekranınıza Ekleyin!</strong>
+  <p id="pwa-install-description" style="margin-top: 8px; margin-bottom: 12px;"></p>
+  <button id="pwa-install-button">Ekle</button>
+  <button id="pwa-dismiss-button">Sonra</button>
+</div>
+<div id="card-data"
+     data-profile-picture="/uploads/cards/{{.Card.Photo}}"
+     data-filename="/uploads/cards/{{.Card.Photo}}">
+</div>
+<script>
+     document.addEventListener('DOMContentLoaded', function() {
+
+        const pwaInstallAlert = document.getElementById('pwa-install-alert');
+        const pwaInstallTitle = document.getElementById('pwa-install-title');
+        const pwaInstallDescription = document.getElementById('pwa-install-description');
+        const pwaInstallButton = document.getElementById('pwa-install-button');
+        const pwaDismissButton = document.getElementById('pwa-dismiss-button');
+        let deferredPrompt;
+
+        const currentCleanSlug = "{{ .Card.Slug }}";
+        const pwaDismissedKey_iOS = `iosPwaInstallDismissed-${currentCleanSlug}`;
+        const pwaDismissedKey_Android = `androidPwaInstallDismissed-${currentCleanSlug}`;
+
+        function isIos() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            return /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+        }
+
+        function isInStandaloneMode() {
+            return (window.matchMedia('(display-mode: standalone)').matches) ||
+                (window.navigator.standalone) ||
+                document.referrer.includes('android-app://');
+        }
+
+        if (pwaInstallAlert && !isInStandaloneMode()) {
+            if (isIos()) {
+                if (!localStorage.getItem(pwaDismissedKey_iOS)) {
+                    if (pwaInstallTitle) {
+                        pwaInstallTitle.textContent = "Kartviziti Ana Ekrana Ekle";
+                    }
+                    if (pwaInstallDescription) {
+                        pwaInstallDescription.innerHTML = `Bu kartviziti iPhone/iPad ana ekranınıza eklemek için Safari'de Paylaş <i class="fa-solid fa-arrow-up-from-bracket" style="font-size:0.85em; display:inline-block; margin: 0 2px; vertical-align: middle;"></i> ikonuna, sonra "Ana Ekrana Ekle"ye dokunun.`;
+                    }
+
+                    if (pwaInstallButton) pwaInstallButton.style.display = 'none';
+                    if (pwaDismissButton) pwaDismissButton.textContent = 'Anladım';
+                    pwaInstallAlert.style.display = 'block';
+                }
+            } else {
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+
+                    if (!localStorage.getItem(pwaDismissedKey_Android)) {
+                        if (pwaInstallTitle) {
+                            pwaInstallTitle.textContent = "Bu Kartviziti Ana Ekranınıza Ekleyin!";
+                        }
+                        if (pwaInstallDescription) {
+                            pwaInstallDescription.textContent = "Hızlı erişim için ana ekranınıza ekleyebilirsiniz.";
+                        }
+                        if(pwaInstallButton) pwaInstallButton.textContent = 'Ekle';
+                        if(pwaDismissButton) pwaDismissButton.textContent = 'Sonra';
+
+                        pwaInstallAlert.style.display = 'block';
+                    }
+                });
+            }
+
+            if (pwaInstallButton) {
+                pwaInstallButton.addEventListener('click', async () => {
+                    if (deferredPrompt) {
+                        pwaInstallAlert.style.display = 'none';
+                        deferredPrompt.prompt();
+                        try {
+                            const { outcome } = await deferredPrompt.userChoice;
+                            if (outcome === 'accepted') {
+                                console.log('Kullanıcı PWA kurulumunu kabul etti.');
+                                localStorage.setItem(pwaDismissedKey_Android, 'true');
+                            } else {
+                                console.log('Kullanıcı PWA kurulumunu reddetti.');
+                            }
+                        } catch (error) {
+                            console.error('PWA kurulum istemiyle ilgili hata:', error);
+                        }
+                        deferredPrompt = null;
+                    }
+                });
+            }
+
+            if (pwaDismissButton) {
+                pwaDismissButton.addEventListener('click', () => {
+                    pwaInstallAlert.style.display = 'none';
+                    localStorage.setItem(isIos() ? pwaDismissedKey_iOS : pwaDismissedKey_Android, 'true');
+                });
+            }
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/js/sw.js', { scope: '/' })
+                    .then(registration => {
+                        console.log('ServiceWorker başarıyla kaydedildi, kapsam:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('ServiceWorker kaydı başarısız oldu:', error);
+                    });
+            });
+        }
+
+        const cardElement = document.getElementById("card-data");
+        const shareToggleBtn = document.getElementById('shareToggleBtn');
+        const shareOptionsPanel = document.getElementById('shareOptionsPanel');
+        const chevronIcon = shareToggleBtn ? shareToggleBtn.querySelector('.icon-chevron-down') : null;
+        const inCardButtonContainer = document.getElementById('inCardCreateButtonContainer');
+        const qrCodeImgElement = document.getElementById('qrCodeDynamic');
+        const profileImageElement = document.getElementById('profileImage');
+
+        const currentPageFullURL = "https://zatrano/{{ .Card.Slug }}";
+        const profileNameForJS = "{{ .Card.Name }}";
+        const profileTitleForJS = "{{ .Card.Title }}";
+        const profileImageSrcForCanvas = cardElement.getAttribute("data-profile-picture");
+
+        if (shareToggleBtn && shareOptionsPanel) {
+            shareToggleBtn.addEventListener('click', () => {
+                shareOptionsPanel.classList.toggle('open');
+                if(chevronIcon) shareToggleBtn.classList.toggle('open');
+            });
+        }
+
+        if (inCardButtonContainer) {
+            setTimeout(() => {
+                inCardButtonContainer.classList.add('visible');
+            }, 5000);
+        }
+
+        function loadImage(src) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.onload = () => resolve(img);
+                img.onerror = (e) => {
+                    console.error(`Resim yüklenemedi: ${src}`, e);
+                    const placeholder = new Image();
+                    if (src && (src.includes('qrserver') || !src )) {
+                         placeholder.width = 70; placeholder.height = 70;
+                         placeholder.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+                    } else {
+                       placeholder.width = 80; placeholder.height = 80;
+                       placeholder.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23cccccc"/><text x="50%" y="50%" font-size="40" fill="%23ffffff" text-anchor="middle" dy=".3em">?</text></svg>';
+                    }
+                    resolve(placeholder);
+                };
+                 if (!src || src === window.location.href || src === currentPageFullURL + "#") {
+                    console.warn(`Geçersiz veya boş resim src: "${src}"`);
+                    const placeholder = new Image(70,70);
+                    placeholder.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+                    resolve(placeholder);
+                 } else {
+                    img.src = src;
+                 }
+            });
+        }
+
+        function triggerDownload(dataUrl, filename) {
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        async function generateCanvasImageDataUrl() {
+             return new Promise(async (resolve, reject) => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const scale = 2;
+                const canvasSize = 600;
+                const width = canvasSize * scale;
+                const height = canvasSize * scale;
+                canvas.width = width;
+                canvas.height = height;
+
+                const siteUrl = new URL(currentPageFullURL);
+                const qrCodeSrc = qrCodeImgElement ? qrCodeImgElement.src : '';
+
+                try {
+                     const [profileImg, qrImg] = await Promise.all([
+                         loadImage(profileImageSrcForCanvas),
+                         loadImage(qrCodeSrc)
+                     ]);
+
+                    const rootStyles = getComputedStyle(document.documentElement);
+                    const brandColor = rootStyles.getPropertyValue('--brand-color').trim() || '#10B981';
+                    const accentColor = rootStyles.getPropertyValue('--accent-color').trim() || '#8B5CF6';
+
+                    const gradient = ctx.createLinearGradient(0, 0, width, height);
+                    gradient.addColorStop(0, brandColor);
+                    gradient.addColorStop(1, accentColor);
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, width, height);
+
+                    const profileImgSize = 200 * scale;
+                    const profileX = (width - profileImgSize) / 2;
+                    const profileY = 60 * scale;
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(profileX + profileImgSize / 2, profileY + profileImgSize / 2, profileImgSize / 2, 0, Math.PI * 2, true);
+                    ctx.closePath();
+                    ctx.clip();
+                    ctx.drawImage(profileImg, profileX, profileY, profileImgSize, profileImgSize);
+                    ctx.restore();
+                    ctx.beginPath();
+                    ctx.arc(profileX + profileImgSize / 2, profileY + profileImgSize / 2, profileImgSize / 2 + (3 * scale), 0, Math.PI * 2, true);
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                    ctx.lineWidth = 6 * scale;
+                    ctx.stroke();
+
+                    ctx.fillStyle = 'white';
+                    ctx.textAlign = 'center';
+                    ctx.font = `bold ${36 * scale}px Poppins`;
+                    ctx.fillText(profileNameForJS, width / 2, profileY + profileImgSize + 50 * scale);
+
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                    ctx.font = `normal ${20 * scale}px Poppins`;
+                    ctx.fillText(profileTitleForJS, width / 2, profileY + profileImgSize + 85 * scale);
+
+                    const qrSizeCanvas = 120 * scale;
+                    const qrX = (width - qrSizeCanvas) / 2;
+                    const textHeight = (16 * scale) + (10 * scale);
+                    const qrTotalHeight = qrSizeCanvas + (10 * scale) + textHeight + (40 * scale);
+                    const qrY = height - qrTotalHeight;
+
+                    ctx.fillStyle = 'white';
+                    ctx.beginPath();
+                    const borderRadius = 8 * scale;
+                    const rectX = qrX - 5 * scale; const rectY = qrY - 5 * scale;
+                    const rectW = qrSizeCanvas + 10 * scale; const rectH = qrSizeCanvas + 10 * scale;
+                    ctx.moveTo(rectX + borderRadius, rectY); ctx.lineTo(rectX + rectW - borderRadius, rectY);
+                    ctx.quadraticCurveTo(rectX + rectW, rectY, rectX + rectW, rectY + borderRadius);
+                    ctx.lineTo(rectX + rectW, rectY + rectH - borderRadius);
+                    ctx.quadraticCurveTo(rectX + rectW, rectY + rectH, rectX + rectW - borderRadius, rectY + rectH);
+                    ctx.lineTo(rectX + borderRadius, rectY + rectH);
+                    ctx.quadraticCurveTo(rectX, rectY + rectH, rectX, rectY + rectH - borderRadius);
+                    ctx.lineTo(rectX, rectY + borderRadius); ctx.quadraticCurveTo(rectX, rectY, rectX + borderRadius, rectY);
+                    ctx.closePath(); ctx.fill();
+
+                    ctx.drawImage(qrImg, qrX, qrY, qrSizeCanvas, qrSizeCanvas);
+
+                     ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                     ctx.font = `600 ${16 * scale}px Poppins`;
+                     ctx.fillText(siteUrl, width / 2, qrY + qrSizeCanvas + 25 * scale);
+
+                    resolve(canvas.toDataURL('image/png', 0.95));
+
+                } catch (error) {
+                    console.error("Canvas görseli oluşturulurken hata:", error);
+                    reject(error);
+                }
+            });
+        }
+
+        async function generateAndShareInstagramImage() {
+             try {
+                const dataURL = await generateCanvasImageDataUrl();
+                const blob = await (await fetch(dataURL)).blob();
+                if (!blob) { alert('Görsel paylaşım için hazırlanamadı.'); return; }
+                const cardElement = document.getElementById("card-data");
+                const filename = cardElement.getAttribute("data-filename");
+                const file = new File([blob], filename, { type: 'image/png' });
+                const shareData = {
+                    files: [file],
+                    title: `${profileNameForJS} Dijital Kartvizit`,
+                    text: `${profileNameForJS} - ${profileTitleForJS}. Profilini inceleyin!`,
+                };
+                if (navigator.canShare && navigator.canShare(shareData)) {
+                    await navigator.share(shareData);
+                } else {
+                    triggerDownload(dataURL, filename);
+                    alert('Instagram için görsel indirildi. Galerinizden paylaşabilirsiniz.');
+                }
+            } catch (error) {
+                alert("Instagram için görsel oluşturulurken/paylaşılırken hata oluştu.");
+            }
+        }
+
+         window.downloadGeneratedImage = async function(buttonElement) {
+             const originalHTML = buttonElement.innerHTML;
+             buttonElement.disabled = true;
+             buttonElement.innerHTML = `<i class="fa-solid fa-hourglass-half fa-spin mr-1" style="font-size: 13px;"></i> Oluşturuluyor...`;
+             try {
+                 const dataURL = await generateCanvasImageDataUrl();
+                 const filename = `{{ .Card.Slug }}-qr.png`;
+                 triggerDownload(dataURL, filename);
+             } catch (error) {
+                 alert("Görsel indirilirken bir hata oluştu.");
+             } finally {
+                 buttonElement.disabled = false;
+                 buttonElement.innerHTML = originalHTML;
+             }
+         }
+
+         window.copyIban = function(buttonElement, ibanToCopy) {
+            navigator.clipboard.writeText(ibanToCopy).then(() => {
+                const originalIconClass = 'fa-regular fa-copy';
+                const iconElement = buttonElement.querySelector('i');
+                if (iconElement) {
+                    iconElement.className = 'fa-solid fa-check';
+                    buttonElement.classList.add('copied');
+                    buttonElement.disabled = true;
+                    setTimeout(() => {
+                        iconElement.className = originalIconClass;
+                        buttonElement.classList.remove('copied');
+                        buttonElement.disabled = false;
+                    }, 1500);
+                }
+            }).catch(err => {
+                console.error('IBAN kopyalanamadı: ', err);
+                alert('Üzgünüz, IBAN otomatik olarak kopyalanamadı.');
+            });
+        };
+
+        window.shareUserProfile = function(platform) {
+            const profileUrl = currentPageFullURL;
+            let shareUrl = '';
+            const textForShare = encodeURIComponent(`${profileNameForJS} - ${profileTitleForJS}. Dijital kartvizitimi inceleyin: ${profileUrl}`);
+
+            switch (platform) {
+                case 'whatsapp': shareUrl = `https://api.whatsapp.com/send?text=${textForShare}`; break;
+                case 'twitter': shareUrl = `https://twitter.com/intent/tweet?text=${textForShare}`; break;
+                case 'facebook': shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(profileUrl)}"e=${textForShare}`; break;
+                case 'linkedin': shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`; break;
+                case 'instagram':
+                     generateAndShareInstagramImage();
+                     return;
+                default: console.warn('Bilinmeyen paylaşım platformu:', platform); return;
+            }
+            if (shareUrl) window.open(shareUrl, '_blank', 'noopener,noreferrer');
+        };
+
+        window.addToContacts = function() {
+            window.location.href = '/vcard/{{ .Card.Slug }}';
+        };
+
+        window.copyUserProfileLink = function() {
+            const profileUrl = currentPageFullURL;
+            navigator.clipboard.writeText(profileUrl).then(() => {
+                alert('Profil bağlantısı panoya kopyalandı!');
+            }).catch(err => {
+                console.error('Kopyalama başarısız oldu: ', err);
+                 try {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = profileUrl;
+                    textarea.style.position = 'fixed'; textarea.style.opacity = '0';
+                    document.body.appendChild(textarea);
+                    textarea.focus(); textarea.select(); document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    alert('Profil bağlantısı panoya kopyalandı! (Eski yöntem)');
+                } catch (e) {
+                     alert('Üzgünüz, bağlantı otomatik olarak kopyalanamadı.');
+                }
+            });
+        };
+
+        if (qrCodeImgElement) {
+            if (currentPageFullURL) {
+                const qrApiBase = 'https://api.qrserver.com/v1/create-qr-code/';
+                const qrSize = '140x140';
+                const finalQrSize = '70x70';
+                const qrData = `data=${encodeURIComponent(currentPageFullURL)}`;
+                const qrParams = `size=${finalQrSize}&${qrData}&bgcolor=FFFFFF&color=000000&qzone=1&margin=0`;
+                const finalQrSrc = `${qrApiBase}?${qrParams}`;
+
+                const tempImg = new Image();
+                tempImg.onload = function() {
+                   qrCodeImgElement.src = finalQrSrc;
+                   qrCodeImgElement.alt = "Sayfa QR Kodu";
+                };
+                tempImg.onerror = function() {
+                    console.error("QR kod yüklenemedi veya API hatası.");
+                    qrCodeImgElement.alt = "QR Kod Yüklenemedi";
+                };
+                tempImg.src = finalQrSrc;
+            } else {
+                console.error("QR kod oluşturmak için sayfa URL'si bulunamadı.");
+                qrCodeImgElement.alt = "QR Kod için URL Eksik";
+            }
+        } else {
+             console.error("QR kod resim elementi (#qrCodeDynamic) bulunamadı.");
+        }
+    });
+</script>
+</body>
+</html>

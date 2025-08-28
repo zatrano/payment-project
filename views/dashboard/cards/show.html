@@ -1,0 +1,165 @@
+<div class="card-content-area">
+  <div class="main-scrollable-content">
+
+    <header class="profile-header">
+      <div class="header-bg-pattern">
+        <div class="absolute inset-0 opacity-20">
+          <div class="absolute top-0 left-0 w-full h-full"
+            style="background-image: radial-gradient(circle at 25px 25px, rgba(255, 255, 255, 0.2) 2px, transparent 0),
+                   radial-gradient(circle at 75px 75px, rgba(255, 255, 255, 0.2) 2px, transparent 0);
+                   background-size: 100px 100px;">
+          </div>
+        </div>
+      </div>
+      <div class="profile-info-container">
+        <img id="profileImage" src="/uploads/cards/{{ .Card.Photo }}" alt="{{ .Card.Name }}" class="profile-img-main">
+        <h1 class="profile-name">{{ .Card.Name }}</h1>
+        <p class="profile-title">{{ .Card.Title }}</p>
+      </div>
+    </header>
+
+    <hr class="section-divider">
+
+    <section class="contact-section">
+      <div class="icon-actions-row">
+        {{if .Card.Telephone}}
+        <a href="tel:{{ .Card.Telephone }}" title="Ara">
+          <span class="icon-wrapper"><i class="fa-solid fa-phone"></i></span>
+          <span>Ara</span>
+        </a>
+        {{end}}
+
+        {{if .Card.Email}}
+        <a href="mailto:{{ .Card.Email }}" title="E-posta Gönder">
+          <span class="icon-wrapper"><i class="fa-solid fa-envelope"></i></span>
+          <span>E-posta</span>
+        </a>
+        {{end}}
+
+        {{if .Card.Location}}
+        <a href="{{ .Card.Location }}" target="_blank" title="Konum">
+          <span class="icon-wrapper"><i class="fa-solid fa-location-dot"></i></span>
+          <span>Konum</span>
+        </a>
+        {{end}}
+
+        {{if .Card.WebsiteUrl}}
+        <a href="{{ .Card.WebsiteUrl }}" target="_blank" title="Web Site">
+          <span class="icon-wrapper"><i class="fa-solid fa-globe"></i></span>
+          <span>Web Site</span>
+        </a>
+        {{end}}
+
+        {{if .Card.StoreUrl}}
+        <a href="{{ .Card.StoreUrl }}" target="_blank" title="Mağaza Linki">
+          <span class="icon-wrapper"><i class="fa-solid fa-store"></i></span>
+          <span>Mağaza</span>
+        </a>
+        {{end}}
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    {{if .Card.CardSocialMedia}}
+    <section class="social-media-section">
+      <h2 class="section-title">Sosyal Medya</h2>
+      <div class="social-icons-grid">
+        {{range .Card.CardSocialMedia}}
+        {{if .SocialMedia.IsActive}}
+        <a href="{{ .URL }}" title="{{ .SocialMedia.Name }}" target="_blank">
+          <span class="icon-wrapper"><i class="{{ .SocialMedia.Icon }}"></i></span>
+          <span>{{ .SocialMedia.Name }}</span>
+        </a>
+        {{end}}
+        {{end}}
+      </div>
+    </section>
+    <hr class="section-divider">
+    {{end}}
+
+    {{if .Card.CardBanks}}
+    <section class="iban-section">
+      <h2 class="section-title">IBAN Bilgileri</h2>
+      <div class="space-y-1.5">
+        {{range .Card.CardBanks}}
+            {{if .Bank.IsActive}}
+            <div class="iban-row">
+            <div class="iban-details">
+                <span class="icon-wrapper bank-logo">
+                <i class="fa-solid fa-building-columns"></i>
+                </span>
+                <div>
+                <span class="iban-text block">{{ .IBAN }}</span>
+                <span class="bank-name block">{{ .Bank.Name }}</span>
+                </div>
+            </div>
+            <button class="copy-iban-button" title="IBAN Kopyala" onclick="copyIban(this, '{{ .IBAN }}')">
+                <i class="fa-regular fa-copy"></i>
+            </button>
+            </div>
+            {{end}}
+        {{end}}
+      </div>
+    </section>
+    <hr class="section-divider">
+    {{end}}
+
+    <section class="share-section">
+      <button id="shareToggleBtn" class="share-toggle-button">
+        <span class="icon-left-btn">
+          <i class="fa-solid fa-share-nodes"></i>
+          <span class="ml-1">Bu Profili Paylaş</span>
+        </span>
+        <i class="fa-solid fa-chevron-down icon-chevron-down"></i>
+      </button>
+      <div id="shareOptionsPanel" class="share-options-panel">
+        <div class="social-icons-grid">
+          <a href="javascript:void(0);" onclick="shareUserProfile('whatsapp')" title="WhatsApp">
+            <span class="icon-wrapper"><i class="fa-brands fa-whatsapp"></i></span>
+            <span>WhatsApp</span>
+          </a>
+          <a href="javascript:void(0);" onclick="shareUserProfile('facebook')" title="Facebook">
+            <span class="icon-wrapper"><i class="fa-brands fa-facebook-f"></i></span>
+            <span>Facebook</span>
+          </a>
+          <a href="javascript:void(0);" onclick="shareUserProfile('twitter')" title="X / Twitter">
+            <span class="icon-wrapper"><i class="fa-brands fa-x"></i></span>
+            <span>X</span>
+          </a>
+          <a href="javascript:void(0);" onclick="shareUserProfile('linkedin')" title="LinkedIn">
+            <span class="icon-wrapper"><i class="fa-brands fa-linkedin-in"></i></span>
+            <span>LinkedIn</span>
+          </a>
+          <a href="javascript:void(0);" onclick="shareUserProfile('instagram')" title="Instagram">
+            <span class="icon-wrapper"><i class="fa-brands fa-instagram"></i></span>
+            <span>Instagram</span>
+          </a>
+        </div>
+        <button onclick="copyUserProfileLink()" class="copy-link-button">
+          <i class="fa-solid fa-link"></i> Profil Bağlantısını Kopyala
+        </button>
+      </div>
+    </section>
+
+    <section class="qr-code-section">
+      <hr class="section-divider">
+      <div class="qr-code-wrapper">
+        <img id="qrCodeDynamic" src="" alt="QR Kod" class="qr-image">
+      </div>
+      <button onclick="downloadGeneratedImage(this)" class="download-qr-button">
+        <i class="fa-solid fa-download"></i> QR Kodu İndir
+      </button>
+      <button onclick="addToContacts()" class="download-qr-button mt-2">
+        <i class="fa-solid fa-address-card"></i> Rehbere Ekle
+      </button>
+    </section>
+
+  </div>
+
+  <div id="inCardCreateButtonContainer" class="in-card-create-button-container">
+    <a href="https://zatrano" class="create-digital-card-btn-incard">
+      <i class="fa-solid fa-plus"></i> Dijital Kartvizit Oluştur
+    </a>
+  </div>
+</div>
